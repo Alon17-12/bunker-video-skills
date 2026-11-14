@@ -1,0 +1,11 @@
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
+.venv/
+*.mp4
+*.mov
+*.wav
+!skills/podcast-reels-9x16/references/click.wav
+!engine/bunker-session/assets/**
+!engine/bunker-session/reels/assets/**

@@ -1,0 +1,5 @@
+node_modules
+out/
+# per-session data lives in <session>/רילס/remotion — never here
+public/
+work/

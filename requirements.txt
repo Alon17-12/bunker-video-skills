@@ -1,0 +1,8 @@
+faster-whisper
+huggingface_hub
+numpy
+scipy
+pillow
+opencv-python-headless
+mediapipe
+fonttools

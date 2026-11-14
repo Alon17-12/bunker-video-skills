@@ -1,0 +1,11 @@
+{
+  "client": "לקוח R",
+  "show": "לקוח R",
+  "speakers": [{"name": "אורח R", "mic": 1, "color": "#FFD400"}, {"name": "אלון", "mic": 2, "color": "#FFFFFF"}],
+  "terms": ["קפה אח שלי"],
+  "reels": {"font": "Heebo", "graphics": true, "music": {"on": true, "mood": "רגוע"},
+            "logo": {"on": false, "path": null}},
+  "episode": {"names_on_screen": true, "logo": {"on": true, "path": "לוגו.png"},
+              "cta": {"on": false, "text": "", "link": ""}},
+  "landing_page": {"url": null, "brand": null}
+}
