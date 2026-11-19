@@ -157,6 +157,12 @@ land in the wrong place, or nowhere.
 Values are absolute, in the same units as `clip.scale` / `clip.transform`.
 `curveType: "Line"` with zero control points is a clean linear ramp.
 
+**Ease («Easing» in CapCut's keyframe menu)** — the only encoding the menu shows as Easing, read off
+Alon's hand-set keys (16.11.26): both keys of an interval `FreeCurveInOut`; the start key's
+`right_control.x = 0.42·Δt − 1`, the end key's `left_control.x = −0.42·Δt` (µs, y 0), and the end key
+gets a fresh `graphID`. Bare `CurveInOut` with zero controls and handle-less `FreeCurveInOut` both
+show as **Linear** — Alon rejected both («אין ease»).
+
 Before the first keyframe and after the last, the value is **held**. So a
 property whose first keyframe sits mid-clip is that value from the clip's start
 — which is how a split-screen position leaks backwards over a whole shot. Always

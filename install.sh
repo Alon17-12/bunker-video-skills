@@ -7,7 +7,7 @@ ENGINE="$HOME/bunker-video-engine"
 SKILLS="$HOME/.claude/skills"
 FORCE=0; [[ "$1" == "--force" ]] && FORCE=1
 
-[[ "$(uname -s)" == "Darwin" ]] || { echo "✗ הכלים בנויים למק (CapCut לדסקטופ)."; exit 1; }
+[[ "$(uname -s)" == "Darwin" ]] || { echo "✗ זה המתקין למק. ב-Windows: powershell -ExecutionPolicy Bypass -File .\\install.ps1"; exit 1; }
 [[ "$(uname -m)" == "arm64" ]] || echo "⚠ המחשב לא Apple Silicon — ffmpeg שיורד כאן הוא arm64; התקינו ffmpeg בעצמכם."
 
 echo "▶ 1/7 סקילים → $SKILLS"
@@ -25,6 +25,7 @@ echo "▶ 2/7 מנוע העריכה → $ENGINE"
 mkdir -p "$ENGINE/bin" "$ENGINE/models"
 rsync -a "$REPO/engine/app/" "$ENGINE/app/"
 rsync -a --exclude node_modules "$REPO/engine/bunker-session/" "$ENGINE/bunker-session/"
+cp "$REPO/engine/doctor.py" "$ENGINE/doctor.py"
 ln -sfn "$SKILLS/bunker-editing" "$ENGINE/bunker-session/skill"
 [[ -f "$ENGINE/config.json" ]] || echo '{"styles": [], "color_presets": [], "show_presets": []}' > "$ENGINE/config.json"
 
@@ -66,5 +67,7 @@ else
 fi
 
 mkdir -p "$HOME/VideoAssets/music" "$HOME/VideoAssets/סאונד/SFX"
+echo; echo "▶ בדיקת מוכנות"
+"$ENGINE/.venv/bin/python" "$ENGINE/doctor.py" || true
 echo
 echo "✓ מוכן. פותחים שיחה חדשה ב-Claude Code ומבקשים, למשל: «תערוך רילס מהפרק בפרויקט X ב-CapCut»."

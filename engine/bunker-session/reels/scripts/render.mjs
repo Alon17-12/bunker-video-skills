@@ -48,16 +48,16 @@ try {
       const { crf: _c, scale: _s, pixelFormat: _p, colorSpace: _cs, ...aud } = base;   // the sound pass takes no picture options
       await retry(() => renderMedia({ ...aud, codec: "wav", outputLocation: wav }), `${id} audio`);
       fs.writeFileSync(list, parts.map((p) => `file '${p.replace(/'/g, "'\\''")}'`).join("\n"));
-      const cat = spawnSync(path.join(process.env.HOME, "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", list, "-i", wav,
+      const cat = spawnSync(path.join((process.env.HOME || process.env.USERPROFILE), "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", list, "-i", wav,
         "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "pcm_s16le", raw.replace(/\.mp4$/, ".mov")]);
       if (cat.status !== 0) throw new Error(cat.stderr.toString());
       fs.renameSync(raw.replace(/\.mp4$/, ".mov"), raw);
       [...parts, wav, list].forEach((f) => fs.rmSync(f, { force: true }));
     }
-    const ff = spawnSync(path.join(process.env.HOME, "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-i", raw, "-c:v", "copy", "-bsf:v", "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "256k", out]);
+    const ff = spawnSync(path.join((process.env.HOME || process.env.USERPROFILE), "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-i", raw, "-c:v", "copy", "-bsf:v", "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "256k", out]);
     if (ff.status !== 0) throw new Error(ff.stderr.toString());
     fs.unlinkSync(raw);
-    const probe = spawnSync(path.join(process.env.HOME, "ffmpeg-bin/ffprobe"), ["-v", "error", "-select_streams", "v", "-show_entries", "stream=pix_fmt,color_range,color_space,color_primaries,color_transfer", "-of", "csv=p=0", out]).stdout.toString().trim().replace(/,+$/, "");
+    const probe = spawnSync(path.join((process.env.HOME || process.env.USERPROFILE), "ffmpeg-bin/ffprobe"), ["-v", "error", "-select_streams", "v", "-show_entries", "stream=pix_fmt,color_range,color_space,color_primaries,color_transfer", "-of", "csv=p=0", out]).stdout.toString().trim().replace(/,+$/, "");
     if (probe !== "yuv420p,tv,bt709,bt709,bt709") throw new Error(`${id}: ${out} is ${probe}, not yuv420p · tv · bt709 — not delivered`);
     const dir = path.join(S, "רילס", dirOf(id));
     fs.mkdirSync(dir, { recursive: true });

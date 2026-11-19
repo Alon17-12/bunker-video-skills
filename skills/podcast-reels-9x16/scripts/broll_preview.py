@@ -14,7 +14,7 @@ sheet = Image.new("RGB", (cols * TW + 20, len(idx) * TH), (20, 20, 20)); dr = Im
 for r, i in enumerate(idx):
     it = items[i]; p = root / it["path"]
     for c, f in enumerate((0.1, 0.5, 0.9)):
-        tp = Path("/tmp") / f"pv_{i}_{c}.jpg"
+        tp = Path(__import__("tempfile").gettempdir()) / f"pv_{i}_{c}.jpg"
         subprocess.run([str(paths.FFMPEG), "-y", "-loglevel", "error", "-ss", f"{it['dur'] * f:.2f}", "-i", str(p), "-frames:v", "1", "-vf", "scale=240:-2", str(tp)], capture_output=True)
         try: im = Image.open(tp).convert("RGB"); im.thumbnail((TW - 4, TH - 40)); sheet.paste(im, (c * TW + 2, r * TH + 2))
         except Exception: pass

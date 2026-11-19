@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 FF = str(Path.home() / "ffmpeg-bin/ffmpeg")
-DRAFTS = Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"
+DRAFTS = (Path(__import__("os").environ["BUNKER_CAPCUT_DRAFTS"]) if __import__("os").environ.get("BUNKER_CAPCUT_DRAFTS") else (Path(__import__("os").environ.get("LOCALAPPDATA", "")) / "CapCut/User Data/Projects/com.lveditor.draft" if __import__("os").name == "nt" else Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"))
 W, H = 96, 54
 US = 1_000_000
 

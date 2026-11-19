@@ -3,6 +3,8 @@ name: video-breakdown
 description: Use when the user hands over one or more video links (YouTube, Instagram) or local files and wants to learn how they are MADE, not what they say — "תנתח לי את הסרטונים", "מה הסגנון של הקריאטור הזה", "תפרק את הריל", "איך הם עורכים את זה", "תעשה breakdown", "ספר סגנון", "תשווה בין הסרטונים", "analyze these reels", "reverse engineer this ad", or a client/competitor reference that must be reproduced in CapCut.
 ---
 
+> **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
+
 # Video Breakdown
 
 Reference videos → a style book you can execute from. **Every number is

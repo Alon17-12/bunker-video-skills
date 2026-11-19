@@ -608,3 +608,25 @@ the mics, the camera monitor, the multicam TV, a reel on a phone) replaced every
 framed reel insert; only the overlay graphics and the two Higgsfield comic clips stayed. iPhone HDR must be
 tone-mapped (`broll_cut.py`) or it renders grey. Extra cuts go on literal sentences only («רואי חשבון» → the
 guest in a blazer, «צעירים» → the laughing kid at the mic, «עדויות» → a client watching the two-guest video).
+
+
+## Voice cleanup — the approved chain (לקוחה D course, 16.11.26: «מושלם! זה הסאונד»)
+
+Three rounds on one 86-minute single-speaker course: (1) highpass 80 + afftdn + presence +2 dB → «חסר בשר»;
+(2) body +3 dB @180, −1.5 @3 k, HP 60 → «יותר טוב אבל עדיין יש קצת אקו»; (3) WPE + DeepFilterNet3 before
+the chain + a gentle expander → approved. `scripts/voice_clean.py` is round 3, end to end.
+
+* **Dereverb first, on the raw source** — WPE (taps 40, delay 2, 5 it.) then DeepFilterNet3, *before* any
+  compression (a compressor lifts the tail that WPE needs to see). Then no `afftdn`.
+* **Expander, not gate:** 2:1, range −10 dB, threshold 0.03 — the tail drops, the words keep their ends.
+* **Body:** +3 dB @180 Hz Q0.8, −1.5 dB @3 kHz. No presence lift.
+* **Two sources, one voice:** takes that only have the broadcast/camera sound get a FIR tone match to the
+  same speaker's mic takes (1/3-octave long-term spectra on speech frames, ±6 dB, smoothed) — `--match`.
+* **Sync is part of the chain:** afftdn delayed the voice 25 ms, the FIR 10 ms, WPE+DFN 17–28 ms. The script
+  cross-correlates with the source and trims; residual must print 0.00 ms. A voice track 25 ms late was
+  shipped once before anyone measured.
+* Numbers vs round 2 on the same 30 s: tail 80–200 ms after a word −4 dB, pauses −17 dB. Send Alon a 15 s
+  before/after file per source type; he decides by ear.
+
+### Long-form lesson cuts (לקוחה D simulator r5, 17.11.2026)
+Silence-cutting a lecture: don't cut every 0.3 s pause — Alon: «יותר מדיי חיתוכים… פייד רק כשיש קאט ארוך». Cut pauses > 0.45 s (keep 0.08/0.14 s air), skip any cut that saves < 0.35 s, let fragments < 1 s rejoin their neighbour across gaps < 0.9 s, and put a Mix dissolve only where ≥ 1.5 s of source was removed (plus take/card joins). ≈8 cuts/min. Warmth = clip Adjust › Temperature (`materials.effects` type `temperature`, value + = warmer) on camera shots only.

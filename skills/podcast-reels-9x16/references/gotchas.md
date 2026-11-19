@@ -990,3 +990,11 @@ The draft on disk had moved since r9 — b-rolls and a bed removed, captions del
 tracks (so track INDICES shifted; diff by name). `reel_broll.py` / `reel_sound.py` are idempotent by tearing their
 track down, which is exactly wrong here. `reel_broll_add.py` appends; QA = his tracks byte-identical against a base
 frozen before the write, and every pre-existing b-roll segment unchanged except the ones deliberately trimmed.
+
+## 17.11.2026 — `reels_build.py` on the Bunker's own content takes (not a client episode)
+Two camera work copies, each with its own mic baked in, on two layers (top at alpha 0) → BOTH mics play → Alon: «יצרת בעיה
+עם הסאונד». A fixed crop baked into the copy is not framing either. For content takes the target is different
+(bunker-editing/references/content-reels.md): a Multi-camera clip per take, each camera framed for 9:16 (subject centred,
+eyes on the upper third), the «הבונקר» adjust preset, then a multicam edit — and one voice track. Never take a grade from
+another client's donor project (`--adjust` false / `"adjust": false` in the plan skips the donor's adjust track; `vf1`/`vf2`
+per shoot rotate side-mounted cameras; `title_like` picks the donor's card title by its text).

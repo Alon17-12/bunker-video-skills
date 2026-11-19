@@ -7,8 +7,12 @@ description: >-
   episode in CapCut with a picture-checked start/end and routing QA, mp3 + YouTube texts, team and client corrections.
   Use whenever Alon or the team says «בונקר אקספרס», «סשן אקספרס», «תערוך את הסשן של X», «התיקייה על ה-SSD»,
   «קובץ האפיון», «הערות לרילס/לפרק של X», «פרומפט תיקונים», «תמסור את הסשן», or points at a session or SSD folder —
-  and for any Bunker podcast episode + reels job. Not for a צומת 20 episode (tsomet-20-episode) or a single stand-alone reel.
+  and for any Bunker podcast episode + reels job. Also use for the Bunker's OWN content reels shot as takes (not cut from
+  an episode): «תוכן הבונקר <תאריך>», «טייקים לרילס», «רילס לבונקר מהטייקים» — references/content-reels.md.
+  Not for a צומת 20 episode (tsomet-20-episode) or a single stand-alone reel.
 ---
+
+> **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
 
 # עריכת סרטונים — הבונקר (בונקר אקספרס)
 
@@ -103,6 +107,15 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 הפרומפט מ«העתק פרומפט» בבונקר נשמר ב-`תיקונים/<סבב>.md` →
 `$PY -m bsession corrections "<session>" "תיקונים/<סבב>.md"` (פורמט: `references/corrections-format.md`) → רשימת עבודה עם זמנים
 והמילים שנאמרו → ביצוע לפי `references/corrections.md` → פרויקט קאפקאט בשם גרסה חדש (לעולם לא מעל פרויקט שאלון ערך ידנית).
+
+## רילס תוכן של הבונקר: טייקים, לא מתוך פרק
+**`references/content-reels.md`** — התהליך מ-17.11.2026 לפי הסדר:
+1. **סידור התיקייה:** תיקייה לכל טייק, בתוכה מצלמות 1–2, אודיו 1–2, ‏Live-Mix ומקור.
+2. **פרויקט קאפקאט:** ‏Multi-camera לכל טייק. כל מצלמה מותאמת ל-9:16: מירכוז, עיניים על השליש העליון. שכבת Adjust עם הפריסט «הבונקר». עריכת מולטי-קאם.
+3. **אלון בוחר את הקטעים.**
+4. **Remotion בגרסאות:** ‏720p עם ציון זמן לבקרה, הערות ותיקונים, ואחרי אישור 4K.
+
+ערוץ קול אחד, בלי שני עותקי מצלמה מושמעים. אין גרייד מפרויקט תבנית של לקוח אחר.
 
 ## כללים שלא מתפשרים עליהם (הסיבות ב-`references/house-rules.md`)
 1. ניתוב = מי שמדבר; מצלמה על השותק רק בתגובה אמיתית (צחוק, יד על הפה).

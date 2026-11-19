@@ -59,7 +59,7 @@ if A.encode:
     for cam in (1, 2):
         src = sh[f"cam{cam}"]; mic = sh[f"mic{cam}"]; mo = float(sh["mic_offset"]); part = tmp / f"c{cam}-new.mp4"
         subprocess.run([FF, "-v", "error", "-y", "-ss", f"{a:.4f}", "-t", f"{L:.4f}", "-i", src, "-ss", f"{a+mo:.4f}", "-t", f"{L:.4f}", "-i", mic,
-                        "-map", "0:v:0", "-map", "1:a:0", "-c:v", "h264_videotoolbox", "-b:v", "30M", "-g", "30", "-r", "30",
+                        "-map", "0:v:0", "-map", "1:a:0", *((["-c:v", "h264_videotoolbox"]) if __import__("sys").platform == "darwin" else ["-c:v", "libx264", "-preset", "fast"]), "-b:v", "30M", "-g", "30", "-r", "30",
                         "-c:a", "aac", "-b:a", "256k", "-ac", "1", "-shortest", str(part)], check=True)
         have = lufs(part); need = A.target_lufs - have
         if need > 1.0:

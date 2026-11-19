@@ -2,7 +2,7 @@ import json, os, sys, subprocess, numpy as np
 sys.path.insert(0, os.path.expanduser("~/bunker-video-engine/app"))
 import paths, transcribe
 SP = os.path.expanduser(os.environ.get("WORK", "~/Movies/reel-captions-work/landing-16x9")); os.makedirs(SP, exist_ok=True)   # word caches live in a durable work dir, never the session scratchpad
-p = os.path.expanduser(f"~/Movies/CapCut/User Data/Projects/com.lveditor.draft/{os.environ.get('DRAFT', '0919')}/draft_info.json")
+p = str((Path(__import__("os").environ["BUNKER_CAPCUT_DRAFTS"]) if __import__("os").environ.get("BUNKER_CAPCUT_DRAFTS") else (Path(__import__("os").environ.get("LOCALAPPDATA", "")) / "CapCut/User Data/Projects/com.lveditor.draft" if __import__("os").name == "nt" else Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft")) / os.environ.get("DRAFT", "0919") / "draft_info.json")
 d = json.load(open(p)); SR = 16000; US = 1e6
 mats = {m["id"]: (k, m) for k, arr in d["materials"].items() if isinstance(arr, list) for m in arr if isinstance(m, dict) and "id" in m}
 drafts = {dr["id"]: dr["draft"] for dr in d["materials"]["drafts"]}

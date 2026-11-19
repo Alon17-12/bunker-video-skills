@@ -61,7 +61,8 @@ def encode_copies():
             ss_mic = pc["cam_a"] + mo; assert ss_mic >= 0, "negative mic seek"
             subprocess.run([FF, "-v", "error", "-y", "-ss", f"{pc['cam_a']:.4f}", "-t", f"{pc['len']:.4f}", "-i", src,
                             "-ss", f"{ss_mic:.4f}", "-t", f"{pc['len']:.4f}", "-i", mic,
-                            "-map", "0:v:0", "-map", "1:a:0", "-c:v", "h264_videotoolbox", "-b:v", "30M", "-g", "30", "-r", "30"]
+                            "-map", "0:v:0", "-map", "1:a:0"] + (["-vf", sh[f"vf{cam}"]] if sh.get(f"vf{cam}") else []) +
+                           [*((["-c:v", "h264_videotoolbox"]) if __import__("sys").platform == "darwin" else ["-c:v", "libx264", "-preset", "fast"]), "-b:v", "30M", "-g", "30", "-r", "30"]
                            + (["-af", "volume=0"] if single else []) +                    # keeps the copy continuous; the layer stays hidden and silent
                            ["-c:a", "aac", "-b:a", "256k", "-ac", "1", "-shortest", str(part)], check=True)
             parts.append(part); print(f"    cam{cam} piece {i}: {pc['len']:.2f}s", flush=True)
@@ -126,7 +127,12 @@ seg_tpl = next(copy.deepcopy(s) for t in vt for s in t["segments"] if dvids.get(
 mat_tpl = copy.deepcopy(next(m for m in don["materials"]["videos"] if m.get("type") == "video"))
 card_seg = next(copy.deepcopy(s) for t in vt for s in t["segments"] if dvids.get(s["material_id"], {}).get("type") == "photo")
 card_mat = copy.deepcopy(dvids[card_seg["material_id"]])
-title_tr = next(t for t in don["tracks"] if t["type"] == "text" and 0 < len(t["segments"]) <= 20 and t["segments"][0]["target_timerange"]["duration"] > 3 * US)
+def _txt(t):
+    m = next((m for m in don["materials"]["texts"] if m["id"] == t["segments"][0]["material_id"]), None)
+    try: return json.loads(m["content"])["text"] if m else ""
+    except Exception: return ""
+title_tr = next(t for t in don["tracks"] if t["type"] == "text" and 0 < len(t["segments"]) <= 20 and t["segments"][0]["target_timerange"]["duration"] > 3 * US
+                and (not P.get("title_like") or _txt(t).startswith(P["title_like"])))     # plan "title_like": the donor card title's opening text
 title_seg = copy.deepcopy(title_tr["segments"][0]); title_mat = copy.deepcopy(next(m for m in don["materials"]["texts"] if m["id"] == title_seg["material_id"]))
 adj_tr = next(t for t in don["tracks"] if t["type"] == "adjust" and t["segments"]); adj_seg = copy.deepcopy(adj_tr["segments"][0])
 adj_mat_list, adj_mat = next(((k, m) for k, v in don["materials"].items() if isinstance(v, list) for m in v if isinstance(m, dict) and m.get("id") == adj_seg["material_id"]), (None, None))   # the adjust segment's own material (a `placeholder`), cloned once below
@@ -232,7 +238,7 @@ t1 = copy.deepcopy(trk_tpl); t1["id"] = nid(); t1["segments"] = over; t1["flag"]
 ta = copy.deepcopy(adj_tr); ta["id"] = nid(); ta["segments"] = adjs
 tt = copy.deepcopy(title_tr); tt["id"] = nid(); tt["segments"] = titles; tt["name"] = "כותרות"; tt["is_default_name"] = False
 tm = copy.deepcopy(aud_tr); tm["id"] = nid(); tm["segments"] = beds; tm["name"] = "מוזיקה"; tm["is_default_name"] = False
-d["tracks"] = [t0, t1, ta, tt] + ([tm] if beds else [])
+d["tracks"] = [t0, t1] + ([ta] if P.get("adjust", True) else []) + [tt] + ([tm] if beds else [])
 ri = 0
 for tr in d["tracks"]:
     for s in tr["segments"]: s["render_index"] = ri; ri += 1

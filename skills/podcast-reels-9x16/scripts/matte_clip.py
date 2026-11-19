@@ -44,7 +44,7 @@ def main():
         Image.alpha_composite(Image.new("RGBA", (W, H), (255, 0, 255, 255)), cut).convert("RGB").save(a.out); print("preview →", a.out); return
     # HEVC-with-alpha through VideoToolbox: the format the tsomet-20 banner proved inside CapCut, and ~13× smaller
     # than ProRes 4444 (4 MB vs 53 MB for 2 s). --prores keeps the 4444 master instead.
-    codec = ["-c:v", "prores_ks", "-profile:v", "4444", "-pix_fmt", "yuva444p10le", "-vendor", "apl0"] if a.prores else \
+    codec = ["-c:v", "prores_ks", "-profile:v", "4444", "-pix_fmt", "yuva444p10le", "-vendor", "apl0"] if (a.prores or sys.platform != "darwin") else \
             ["-c:v", "hevc_videotoolbox", "-alpha_quality", "0.9", "-pix_fmt", "bgra", "-tag:v", "hvc1", "-b:v", "20M"]
     enc = subprocess.Popen([FF, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{W}x{H}", "-r", str(a.fps), "-i", "-", *codec, a.out], stdin=subprocess.PIPE)
     n, t0 = 0, time.time()

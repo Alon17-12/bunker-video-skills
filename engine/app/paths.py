@@ -29,7 +29,7 @@ def _resource_base() -> Path:
 
 RESOURCE_DIR = _resource_base()
 APP_DIR = RESOURCE_DIR / "app"                 # web UI is served from app/static
-FFMPEG = RESOURCE_DIR / "bin" / "ffmpeg"
+FFMPEG = RESOURCE_DIR / "bin" / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
 
 # The Hebrew model is the heavy part (1.6GB). It is NOT bundled — that would make
 # the installer 1.6GB. Instead it downloads once from HuggingFace's free CDN into

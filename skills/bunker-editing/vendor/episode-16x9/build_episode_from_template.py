@@ -30,7 +30,7 @@ BANNER_EVERY = 600_000_000    # כל 10 דקות
 
 
 def probe_dur_us(path):
-    ff = next(c for c in (os.path.expanduser('~/ffmpeg-bin/ffprobe'), '/opt/homebrew/bin/ffprobe') if os.path.exists(c))
+    ff = next(c for c in (os.path.expanduser('~/ffmpeg-bin/ffprobe'), os.path.expanduser('~/ffmpeg-bin/ffprobe.exe'), '/opt/homebrew/bin/ffprobe', __import__('shutil').which('ffprobe') or '') if c and os.path.exists(c))
     r = subprocess.run([ff, '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(path)], capture_output=True, text=True)
     return int(round(float(r.stdout.strip()) * US))
 
@@ -82,7 +82,7 @@ def build(d, teaser, t_us, episode, e_us):
 
 def bake_end_music(music, hit, bar, ph, length_us, hit_at_us, out):
     """the last ~18 s of the teaser track, so its final hit lands at hit_at_us (relative to the clip start) — see --end-music"""
-    ff = next(c for c in (os.path.expanduser('~/ffmpeg-bin/ffmpeg'), '/opt/homebrew/bin/ffmpeg') if os.path.exists(c))
+    ff = next(c for c in (os.path.expanduser('~/ffmpeg-bin/ffmpeg'), os.path.expanduser('~/ffmpeg-bin/ffmpeg.exe'), '/opt/homebrew/bin/ffmpeg', __import__('shutil').which('ffmpeg') or '') if c and os.path.exists(c))
     x = ph + math.floor((hit - 18 - ph) / bar) * bar          # a bar line ~18 s before the hit
     th, L = hit - x, length_us / US
     lp = f"0.08*min(t/3\\,1)*(1-min(max((t-({th}-2.2))/2.2\\,0)\\,1))"

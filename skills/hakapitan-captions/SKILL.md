@@ -17,6 +17,8 @@ description: >-
   data-loss and clobber incidents this workflow is prone to.
 ---
 
+> **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
+
 # הקפטן — Captions & Transcripts for CapCut
 
 **הקפטן** is the local caption engine at `~/bunker-video-engine/app` (installed

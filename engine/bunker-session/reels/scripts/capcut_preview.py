@@ -1,7 +1,7 @@
 """what CapCut shows at timeline t (video layers only): split clip, or the camera crop with keyframes evaluated"""
 import json, os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
-P = os.path.join(os.path.expanduser("~/Movies/CapCut/User Data/Projects/com.lveditor.draft"), os.environ["PROJ"])
+P = os.path.join(str((Path(__import__("os").environ["BUNKER_CAPCUT_DRAFTS"]) if __import__("os").environ.get("BUNKER_CAPCUT_DRAFTS") else (Path(__import__("os").environ.get("LOCALAPPDATA", "")) / "CapCut/User Data/Projects/com.lveditor.draft" if __import__("os").name == "nt" else Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"))), os.environ["PROJ"])
 FF = os.path.expanduser("~/ffmpeg-bin/ffmpeg")
 d = json.load(open(P + "/draft_info.json"))
 M = {}

@@ -86,7 +86,12 @@ def main():
     (Path(session) / "רילס/capcut-layout.json").write_text(json.dumps({"project": base_name, "reels": rs}, ensure_ascii=False, indent=1), encoding="utf-8")
     # the appended project: off the home screen, into the Trash (recoverable)
     reels._registry_remove(add_name)
-    subprocess.run(["osascript", "-e", f'tell application "Finder" to delete POSIX file "{B}"'], check=True, capture_output=True)
+    if sys.platform == "darwin":
+        subprocess.run(["osascript", "-e", f'tell application "Finder" to delete POSIX file "{B}"'], check=True, capture_output=True)
+    else:   # Windows: to the Recycle Bin (recoverable), like the Mac Trash
+        subprocess.run(["powershell", "-NoProfile", "-Command",
+                        "Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory("
+                        f"'{B}', 'OnlyErrorDialogs', 'SendToRecycleBin')"], check=True, capture_output=True)
     print(json.dumps({"project": base_name, "duration_s": round(da["duration"] / 1e6, 1), "reels": len(rs), "tracks": len(da["tracks"])}, ensure_ascii=False))
 
 

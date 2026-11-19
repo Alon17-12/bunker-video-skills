@@ -25,7 +25,7 @@ try {
     // CapCut reads HEVC alpha as PREMULTIPLIED: straight colours on a half-transparent glass were added over the picture and
     // blew it out to white (נאווה בויום 11.11.2026, the exported name plate). Premultiply before the HEVC encode.
     const pm = path.join(out, `${j.name}.pm.mov`);
-    execFileSync(path.join(process.env.HOME, "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-i", pr, "-vf", "format=gbrap10le,premultiply=inplace=1",
+    execFileSync(path.join((process.env.HOME || process.env.USERPROFILE), "ffmpeg-bin/ffmpeg"), ["-v", "error", "-y", "-i", pr, "-vf", "format=gbrap10le,premultiply=inplace=1",
       "-c:v", "prores_ks", "-profile:v", "4444", "-pix_fmt", "yuva444p10le", "-vendor", "apl0", pm]);
     execFileSync("/usr/bin/avconvert", ["-s", pm, "-o", dst, "-p", "PresetHEVCHighestQualityWithAlpha", "--replace"]); fs.unlinkSync(pr); fs.unlinkSync(pm);
     console.log("ok", j.name);

@@ -14,6 +14,8 @@ description: >-
   MULTICAM clip changes; for hakapitan-captions when only transcription/captions are wanted.
 ---
 
+> **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
+
 # CapCut post-production by draft surgery
 
 CapCut has no plugin API. Every deliverable here — reels, promos, landing videos — is produced
@@ -32,6 +34,7 @@ can still render wrong. This file is the map; the bodies are in `references/`.
 | The ask | Reference to read | Scripts |
 |---|---|---|
 | 9:16 reels from a two-camera podcast (client timecodes, mics, split screens, LUT) | `references/house-rules.md`, `references/pipeline.md`, `references/framing.md`, `references/brand-layer.md` | `prep_from_srt.py` · `reels_build.py` · `frame_shots.py` · `apply_multicam.py` · `reel_captions.py` · `reel_punches.py` · `reel_cutaways.py` · `reel_broll.py` · `reel_append.py` · `qa25.py` |
+| **voice of a talking head / course recorded in a room** — echo, thin, "חסר בשר", "אקו" | `references/house-rules.md` § Voice cleanup | `voice_clean.py` (run with `~/bunker-video-engine/.venv/bin/python`) |
 | a single talking head in 9:16 (promo, ad, the Bunker's own content reels): intro zoom-out, punches, kinetic stacks, b-roll layer | `references/talking-head-promo.md` + the 0923 entry in `references/scripts.md` (one-camera shoots through the reels chain) | `punch_motion.py` · `kinetic_headlines.py` · `track_pan_plan.py` · `broll_layer.py` · `promo_extras_example.py` |
 | "premium" / "ברמה של יוצרים" on a finished reel project: keyword supers in the accent, hook + name card + CTA, framed real-product inserts, click/swoosh + ducking, compressed voice, keyword colour in captions | `references/creator-styles.md` + `references/scripts.md` § 0923 premium | `reel_supers.py` · `reel_broll.py` (framed items) · `reel_sound.py` · `reel_caption_highlights.py` · `reel_caption_add.py` · `reel_polish.py` · `copies_audio_compress.py` |
 | a 16:9 landing / thank-you / VSL video on a Multi-camera clip he already cut | `references/landing-16x9.md` + `references/creator-styles.md` | `landing_16x9_{transcribe,words_fix,words_from_captions,build,stills}.py` (env `WORK`, `DRAFT`, `BASE_NAME`) |
@@ -134,7 +137,7 @@ build, not as a favour at the end of a project.
 | "I'll add a nuance / a metaphor / a graphic he didn't ask for" | Every graphic he didn't ask for on 0910 was removed. Literal, or nothing. |
 | "Credits will probably cover it" | Check `balance` first and say how many clips it buys. |
 | "The bed's `path` is my mp3, so that is what plays" | A material cloned from a library track keeps its `effect_id`; CapCut re-points it to the library cache on open (0922: four silent beds). Local audio = `extract_music` / `local` / no `effect_id`. |
-| "A boundary/hold key can be `Line`" | Alon: every keyframe with ease. `Line` on a moving pair is a defect; `CurveInOut`, first key `CurveIn`. |
+| "A boundary/hold key can be `Line`" | Alon: every keyframe with ease. `Line` on a moving pair is a defect. Easing = `FreeCurveInOut` + 0.42·Δt handles + `graphID` on the end key (capcut-json.md § Keyframes); bare `CurveInOut` shows as Linear. |
 | "Both layers at volume 1, each with its own mic, nothing doubles" | Gain-baked bleed is 1 dB under the direct mic → comb filter (0922 R5). `copies_audio_gate.py` before delivery. |
 | "The pauses are his to cut" | He cuts every 0.5–1.2 s pause inside a reel himself; `reel_ripple.py` does it from the mics. |
 | "I'll set `matting.flag` in the JSON and CapCut will cut him out" | Unverified. He clicks Remove background on a copy, or `matte_clip.py` makes an alpha .mov. |

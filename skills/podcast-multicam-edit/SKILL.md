@@ -14,6 +14,8 @@ description: >-
   THIS one for camera switching, that one for text.
 ---
 
+> **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
+
 # Podcast Multicam Auto-Editing
 
 A two-person podcast in CapCut is one **multicam clip** (a camera per guest) plus

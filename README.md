@@ -20,13 +20,13 @@
 
 ## דרישות
 
-- מק עם Apple Silicon (M1 ומעלה)
-- [Claude Code](https://claude.com/claude-code)
-- [CapCut לדסקטופ](https://www.capcut.com/) (מק)
-- [Node.js](https://nodejs.org) (בשביל Remotion, לרילס עם גרפיקה)
-- כ-5GB פנויים (מודל התמלול לבדו שוקל 1.6GB)
+- **מק** עם Apple Silicon (M1 ומעלה), **או Windows 10/11 ‏64-bit**
+- [Claude Code](https://claude.com/claude-code). ב-Windows צריך גם [Git for Windows](https://git-scm.com/download/win), כי Claude Code מריץ פקודות דרך Git Bash.
+- [CapCut לדסקטופ](https://www.capcut.com/)
+- [Node.js](https://nodejs.org), בשביל Remotion (רילס עם גרפיקה). ב-Windows המתקין מנסה להתקין אותו לבד.
+- כ-5GB פנויים. מודל התמלול לבדו שוקל 1.6GB.
 
-## התקנה
+## התקנה — מק
 
 ```bash
 git clone https://github.com/Alon17-12/bunker-video-skills.git
@@ -34,11 +34,49 @@ cd bunker-video-skills
 ./install.sh
 ```
 
-ההתקנה מכניסה את הסקילים ל-`~/.claude/skills`, ובנוסף מתקינה Python 3.12 ואת הספריות, ffmpeg, מודל תמלול
-עברית ומודל זיהוי פנים. סקיל שכבר קיים אצלכם לא נדרס. כדי להחליף אותו מריצים `./install.sh --force`, והגרסה הישנה
-נשמרת כגיבוי.
+## התקנה — Windows
 
-אחרי ההתקנה פותחים **שיחה חדשה** ב-Claude Code, והסקילים נטענים לבד.
+פותחים **PowerShell** ומריצים:
+
+```powershell
+git clone https://github.com/Alon17-12/bunker-video-skills.git
+cd bunker-video-skills
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+ההתקנה ב-Windows עושה גם את הדברים הבאים:
+- מסדרת קיצורי דרך, כך שהפקודות בסקילים (שנכתבו למק) רצות כמו שהן.
+- מתקינה את הפונטים של הבית: Heebo, ‏Assistant, ‏Fredoka.
+- מגדירה `PYTHONUTF8=1`, בשביל שמות קבצים ופרויקטים בעברית.
+
+**לפני העבודה הראשונה:** פותחים ב-CapCut פרויקט ריק אחד וסוגרים את התוכנה. אחר כך פותחים שיחה חדשה ב-Claude Code
+ומבקשים: «תקרא את windows.md ותריץ את doctor.py». ב-Windows סוגרים את CapCut **לגמרי** לפני ש-Claude כותב לפרויקט.
+כל ההבדלים מפורטים ב-[`skills/bunker-editing/references/windows.md`](skills/bunker-editing/references/windows.md).
+
+## אחרי ההתקנה (בשתי המערכות)
+
+ההתקנה מכניסה את הסקילים ל-`~/.claude/skills`, ובנוסף מתקינה Python 3.12 ואת הספריות, ffmpeg, מודל תמלול
+עברית ומודל זיהוי פנים. סקיל שכבר קיים אצלכם לא נדרס. כדי להחליף אותו מריצים `./install.sh --force`
+(ב-Windows: ‏`-Force`), והגרסה הישנה נשמרת כגיבוי.
+
+אחרי ההתקנה פותחים **שיחה חדשה** ב-Claude Code, והסקילים נטענים לבד. בדיקת מוכנות אפשר להריץ בכל רגע:
+
+```bash
+~/bunker-video-engine/.venv/bin/python ~/bunker-video-engine/doctor.py
+```
+
+## עדכון
+
+```bash
+git pull
+./install.sh --force
+```
+
+ב-Windows: `git pull`, ואחריו `powershell -ExecutionPolicy Bypass -File .\install.ps1 -Force`.
+
+**כלים אופציונליים** (כבדים, ולכן לא מותקנים מראש):
+- ניקוי קול בחדר (`voice_clean.py`): ‏`uv pip install --python ~/bunker-video-engine/.venv/bin/python nara_wpe deepfilternet soundfile`
+- חיתוך דמות מהרקע (`matte_clip.py`): ‏`rembg`
 
 ## מה להגדיר אצלכם
 
@@ -56,4 +94,5 @@ cd bunker-video-skills
 - התמלול רץ מקומית על המחשב, ושום חומר לא עולה לענן.
 
 ---
-נבנה בבונקר, אולפן הפודקאסטים של אלון גבאי. בשמות הלקוחות שבדוגמאות הוחלפו בכינויים (לקוח A, אורח B…).
+נבנה בבונקר, אולפן הפודקאסטים של אלון גבאי. שמות הלקוחות שבדוגמאות הוחלפו בכינויים (לקוח A, אורח B…).
+הפונטים בתיקייה `fonts/` מופצים לפי רישיון SIL Open Font License.

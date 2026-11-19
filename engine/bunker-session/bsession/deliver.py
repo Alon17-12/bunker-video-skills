@@ -43,7 +43,7 @@ def glob_escape(s: str) -> str:
 
 FF = str(Path.home() / "ffmpeg-bin/ffmpeg")
 FP = str(Path.home() / "ffmpeg-bin/ffprobe")
-DRAFTS = Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"
+DRAFTS = (Path(__import__("os").environ["BUNKER_CAPCUT_DRAFTS"]) if __import__("os").environ.get("BUNKER_CAPCUT_DRAFTS") else (Path(__import__("os").environ.get("LOCALAPPDATA", "")) / "CapCut/User Data/Projects/com.lveditor.draft" if __import__("os").name == "nt" else Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"))
 FOLDERS = ("חומרי גלם", "הפרק השלם", "רילס")       # the Bunker Express delivery, folder for folder (Alon 18.10.2026)
 
 

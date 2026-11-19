@@ -5,6 +5,7 @@ Never writes a draft without creating a timestamped backup first.
 """
 import copy
 import json
+import os
 import shutil
 import subprocess
 import time
@@ -13,7 +14,23 @@ from pathlib import Path
 
 import paths
 
-DRAFTS_DIR = Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"
+IS_WINDOWS = os.name == "nt"
+
+
+def _drafts_dir() -> Path:
+    """Where CapCut keeps its projects. Override with BUNKER_CAPCUT_DRAFTS.
+    Mac: ~/Movies/CapCut/User Data/Projects/com.lveditor.draft
+    Windows: %LOCALAPPDATA%\\CapCut\\User Data\\Projects\\com.lveditor.draft"""
+    env = os.environ.get("BUNKER_CAPCUT_DRAFTS")
+    if env:
+        return Path(env).expanduser()
+    if IS_WINDOWS:
+        base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+        return base / "CapCut" / "User Data" / "Projects" / "com.lveditor.draft"
+    return Path.home() / "Movies/CapCut/User Data/Projects/com.lveditor.draft"
+
+
+DRAFTS_DIR = _drafts_dir()
 BACKUP_PREFIX = "draft_info.ccstudio-backup-"
 MAX_BACKUPS = 5
 FFMPEG_BIN = str(paths.FFMPEG)
@@ -37,8 +54,21 @@ def _capcut_pid() -> int | None:
     each time."""
     now = time.time()
     if now - _pid_cache["t"] > 2.0:
-        out = subprocess.run(["pgrep", "-x", "CapCut"], capture_output=True, text=True)
         pid = None
+        if IS_WINDOWS:
+            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq CapCut.exe", "/FO", "CSV", "/NH"],
+                                 capture_output=True, text=True)
+            for line in (out.stdout or "").splitlines():
+                cols = [c.strip('"') for c in line.split('","')]
+                if len(cols) > 1 and cols[0].lower() == "capcut.exe":
+                    try:
+                        pid = int(cols[1])
+                    except ValueError:
+                        pid = None
+                    break
+            _pid_cache.update(t=now, pid=pid)
+            return _pid_cache["pid"]
+        out = subprocess.run(["pgrep", "-x", "CapCut"], capture_output=True, text=True)
         if out.returncode == 0:
             try:
                 pid = int(out.stdout.split()[0])
@@ -70,7 +100,15 @@ _RECENT_SAVE_S = 90.0
 
 
 def _capcut_open_files(pid: int) -> str:
+    """Text that contains "<draft folder>/" for every draft CapCut has open.
+    Windows has no lsof, so while CapCut runs we report EVERY draft as open:
+    writes there need CapCut closed completely (safe, and the house rule anyway)."""
     now = time.time()
+    if IS_WINDOWS:
+        try:
+            return "\n".join(f"{d}/" for d in DRAFTS_DIR.iterdir())
+        except OSError:
+            return ""
     if _lsof_cache["pid"] != pid or now - _lsof_cache["t"] > 2.0:
         try:
             r = subprocess.run(["lsof", "-nP", "-p", str(pid)],

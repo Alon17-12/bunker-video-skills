@@ -1,0 +1,1 @@
+Heebo, Assistant, Fredoka — SIL Open Font License 1.1 (https://openfontlicense.org). Copied unchanged from Google Fonts. The Windows installer installs them for the user and puts them where the scripts look for them.
