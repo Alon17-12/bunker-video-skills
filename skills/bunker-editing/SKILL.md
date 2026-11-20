@@ -9,7 +9,15 @@ description: >-
   «קובץ האפיון», «הערות לרילס/לפרק של X», «פרומפט תיקונים», «תמסור את הסשן», or points at a session or SSD folder —
   and for any Bunker podcast episode + reels job. Also use for the Bunker's OWN content reels shot as takes (not cut from
   an episode): «תוכן הבונקר <תאריך>», «טייקים לרילס», «רילס לבונקר מהטייקים» — references/content-reels.md.
-  Not for a צומת 20 episode (tsomet-20-episode) or a single stand-alone reel.
+  And when Alon already cut the content reels himself in CapCut and wants them dressed in the house style — «הפרויקט זה
+  רילס לעריכה <תאריך>», «לערוך לפי הסגנון העדכני (צבע, מעקב מצלמה, כתוביות, מוזיקה)», «כשאני מצביע למעלה תראה אייקונים»,
+  «שכל שתי שניות יקרה משהו» — references/content-reels-dress.md.
+  And for a CLIENT's podcast reels edited in Remotion at premium level from times or quotes Alon hands over — «תגזור רילס
+  לפי הזמנים האלה», «הוק … התחלה … סיום», «לא בטוח אם הוא סימן לפי המקור או לפי הרז», «תערוך ב-remotion לפי הסקיל»,
+  «תעלה לו למערכת שיוכל לסמן תיקונים» — references/podcast-reels-remotion.md (clocks, finding a quote in another
+  session, cut/route/split, follow camera, LUT sheet, graphics, 4K checked against the 720, delivery through the admin).
+  Not for a צומת 20 episode (tsomet-20-episode) or a single stand-alone reel. Long-form outside Express — a digital
+  course, a multi-episode interview project, a VSL — is long-form-editing.
 ---
 
 > **Windows:** לפני העבודה הראשונה במחשב Windows, קרא `~/.claude/skills/bunker-editing/references/windows.md`: מה שונה (נתיבים, CapCut סגור לגמרי, כוננים, מקודדים) ובדיקת המוכנות `doctor.py`.
@@ -17,6 +25,7 @@ description: >-
 # עריכת סרטונים — הבונקר (בונקר אקספרס)
 
 **השירות:** הלקוח מקליט בבונקר, ולמחרת מקבל פרק ערוך + 10 רילס, לפי טופס אפיון שמילא לפני הסשן; סבב תיקונים אחד.
+**האפיון:** `~/bunker-video-engine/projects/bunker-session/docs/superpowers/specs/2026-10-18-bunker-express-design.md`.
 **השיטה נבנתה על** «לקוח R #62» (17–18.10.2026, 3 סבבים מול אלון). כל כלל והסיבה שלו: `references/house-rules.md`.
 
 ```
@@ -54,7 +63,7 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 באפיון. המארח = זהב, השאר לבן.
 
 ## 4. במקביל — דיאלוג ותמלול
-- `$PY ~/.claude/skills/bunker-editing/vendor/mic_dialogue.py master "<אודיו>" "<session>/פרק/דיאלוג.wav"` + `check` חייב PASS
+- `$PY ~/.claude/skills/tsomet-20-episode/scripts/mic_dialogue.py master "<אודיו>" "<session>/פרק/דיאלוג.wav"` + `check` חייב PASS
   (סאונד רק מהמיקרופונים, אף פעם לא Live-Mix).
 - **3 מיקרופונים ומעלה / מיקרופון USB:** `$PY skill/scripts/mic_dialogue_n.py bleed "<אודיו>"` → מיקרופון ששומע דובר אחר
   ב־> ‎-15 dB מקבל `--gate K`; USB ליד XLR מקבל `--eq K=R`, כש־R = מיקרופון ה־XLR של הדובר **שיושב לידו** (צריך לשמוע
@@ -68,13 +77,13 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 סוכן עם `references/pick-agent.md` → `רילס/רילס.json` (`reels.count`, 10 בשירות) → `$PY -m bsession check-picks "<session>"` עד שעובר.
 
 ## 6. רילס — תוכנית ב-Remotion, פרויקט בקאפקאט
-**קודם `references/reels-checklist.md`** — סדר העבודה והבדיקות שמונעים סבבים (לקוח A: 6 סבבים על משימה בסיסית). הכל ב-`references/reels.md`. בקצרה, לפי הסדר:
+**קודם `references/reels-checklist.md`** — סדר העבודה והבדיקות שמונעים סבבים (לקוח B: 6 סבבים על משימה בסיסית). הכל ב-`references/reels.md`. בקצרה, לפי הסדר:
 1. `python3 reels/scripts/new_session.py "<session>"` — `<session>/רילס/remotion/{public,work}` (SFX, מוזיקה לפי המצב, לוגו, דיאלוג).
 2. `$PY reels/scripts/qa_transcribe.py "<session>" <טווחים>` — פענוח שני במודל המלא; תיקוני מילים **לפי זמן** ב-`work/fixes.json`.
 3. `work/edl_rN.sh` לכל ריל (חיתוך ידני, **`tighten_edl.py … --story`** — השתיקה בונה מתח) → `$PY reels/scripts/build_cuts.py "<session>"`
    → `$PY reels/scripts/refine_edges.py "<session>"` (קצוות על השקט + מרווח נשימה).
 4. צבע לחלונות (`grade_windows.py` עם `Bunker.cube` → `public/`); מיקום הפנים:
-   `python3 ~/.claude/skills/bunker-editing/vendor/teaser/face_pos.py "<מצלמה 1>" "<מצלמה 2>" --samples 40` → `public/face.json`
+   `python3 ~/.claude/skills/ai-reel-remotion/scripts/teaser/face_pos.py "<מצלמה 1>" "<מצלמה 2>" --samples 40` → `public/face.json`
    (`{"1": {"x","y"}, "2": {"x","y"}}`; מצלמה שבה הדובר מסתכל הצידה — לבדוק בעין בפריים).
 5. `$PY reels/scripts/react_sheets.py "<session>"` → תגובות אמיתיות בעין → `public/plans.json` (תגובות, מסכים משולבים, זום, תוויות, מונה).
 6. `npx tsx reels/scripts/dump.ts "<session>"` חייב «all reels clean»; `node reels/scripts/stills.mjs "<session>" rN "t,…"` — מסתכלים.
@@ -84,6 +93,7 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 אם אלון רוצה לראות קובץ לפני קאפקאט: `node reels/scripts/render.mjs "<session>" v1 r1,r2 2` (4K) + `$PY reels/scripts/reel_asr_qa.py "<session>" v1`.
 
 ## 7. פרק — קאפקאט
+**תוכן ארוך מחוץ לאקספרס** (קורס, כמה פרקים בפרויקט אחד, VSL) → הסקיל `long-form-editing`: שלוש גרסאות, ברירות מחדל לכל סוג, ושער `longform_gate.py` לפני כל מסירה. השער רץ גם על פרק אקספרס.
 הכל ב-`references/episode.md`: התחלה וסוף **לפי התמונה** → `$PY skill/scripts/routing_audit.py "<session>" --from <in> --to <out>` →
 עין על כל מקרה → `skill/scripts/routing_patches.py --keep …` → `routing_smooth.py` → **`routing_frames.py` (לפריים, אחרי `decode_small.py`) ובסוף `routing_verify.py` חייב 0** (בלי הבזקים — `references/house-rules.md` § ניתוב בפרק) → `$PY skill/scripts/build_session_episode.py "<session>" --trim-in … --trim-out …
 --first "<שם>=<s>" --patches "<session>/פרק/תיקוני-ניתוב.json"` → `פרק/יוטיוב.json` (כותרת, תיאור, פרקים).
@@ -108,6 +118,22 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 `$PY -m bsession corrections "<session>" "תיקונים/<סבב>.md"` (פורמט: `references/corrections-format.md`) → רשימת עבודה עם זמנים
 והמילים שנאמרו → ביצוע לפי `references/corrections.md` → פרויקט קאפקאט בשם גרסה חדש (לעולם לא מעל פרויקט שאלון ערך ידנית).
 
+## רילס תוכן כשאלון כבר חתך בקאפקאט («רילס לעריכה <תאריך>», «תערוך לפי הסגנון העדכני»)
+**`references/content-reels-dress.md`** — לקרוא קודם. הלבשה של החיתוך שלו ב-Remotion (מנוע C1911, אושר 19.11.2026):
+אייקונים עם Pop מעל האצבע בכל הצבעה, בירול 16:9 מאחורי הראש (שכבת דמות חתוכה), כתוביות שהגיוון שלהן בפריסה ולא בתנועה,
+מילה־מילה רק איפה שהוא מבקש, בדיקת צפיפות (משהו בכל ~2 שנ'), קובץ נפרד לכל ריל, 720 → «מאושר» → 4K → כונן + Drive → מייקי.
+
+## רילס מפודקאסט של לקוח ב-Remotion («תגזור רילס לפי הזמנים», «תערוך ב-remotion לפי הסקיל»)
+**`references/podcast-reels-remotion.md`** — לקרוא קודם. פרויקט-דוגמה N3 20.11.2026, שבעה סבבים עד «מדהים», מנוע CClient:
+1. **איתור:** באיזה שעון הוא סימן (מצלמות או «רז», לכל סשן בנפרד), המילים קובעות. ציטוט שלא נמצא מחפשים ב-`reel_transcripts` של שאר הסשנים.
+2. **חיתוך:** רק בשקט מדוד, בדיקת שני המיקים במעברי דוברים, והשהיה שקטה אחרי הוק.
+3. **ניתוב ופריימינג:** ניתוב לפי המיקים, מסך מפוצל בחילופי דברים, מעקב ראש עדין (calm), וזום שמתחלף רק בקאט אמיתי.
+4. **צבע:** דף LUT לבחירה של אלון.
+5. **כתוביות וגרפיקה:** כתוביות y 1300, בירולים של הלקוח בלי כפילויות, ובירול AI ב-Wan.
+6. **סאונד:** המוזיקה 20 dB מתחת לדיבור המנורמל.
+7. **4K:** מושווה פריים-פריים ל-720 המאושר.
+8. **מסירה:** ליד הגלם ב-`רילס/` (לא לדרייב). אחר כך האדמין החדש: «ריל מוכן — העלאה ישירה» (חיוב או מתנה לפי אלון), ושליחה רק אחרי «שלח».
+
 ## רילס תוכן של הבונקר: טייקים, לא מתוך פרק
 **`references/content-reels.md`** — התהליך מ-17.11.2026 לפי הסדר:
 1. **סידור התיקייה:** תיקייה לכל טייק, בתוכה מצלמות 1–2, אודיו 1–2, ‏Live-Mix ומקור.
@@ -118,6 +144,7 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 ערוץ קול אחד, בלי שני עותקי מצלמה מושמעים. אין גרייד מפרויקט תבנית של לקוח אחר.
 
 ## כללים שלא מתפשרים עליהם (הסיבות ב-`references/house-rules.md`)
+0. מחיקות בפרק ארוך: מציעים כבלוקים במסלול «למחיקה» וכקובץ SRT, ולא חותכים בעצמנו. בלוק שנשאר אחרי שאלון עבר = מאושר וחותכים. בלוק שנמחק = נדחה. עריכה ידנית של אלון = נשמרת. כל מחיקה שבוצעה מקבלת מרקר אדום לוידוא. הפירוט ב-`references/episode.md`.
 1. ניתוב = מי שמדבר; מצלמה על השותק רק בתגובה אמיתית (צחוק, יד על הפה).
 2. כל מילה מדוברת מופיעה פעם אחת; אין שתי כתוביות יחד; אין מילה חתוכה.
 3. סאונד דיבור רק מהמיקרופונים.

@@ -12,7 +12,7 @@ Added 21.10.2026 (Alon picked «G» after 5 rounds of samples on the same 28 s):
                 shift). The USB mic (Alon, mic 3) ran ~8 dB short of bass and air next to the RØDECaster XLR inputs.
   --gate K      mic K opens only while the transcript has its speaker talking (0.25 s pre-roll, ±0.15 s), or when it
                 clearly leads (≥ 6 dB, a laugh); otherwise −26 dB. For a mic that hears another speaker almost as loud as
-                its own (Eyal's mic, next to Alon and gained +8.9 dB, was open 90 % of Alon's speech → Alon heard twice,
+                its own (client E's mic, next to Alon and gained +8.9 dB, was open 90 % of Alon's speech → Alon heard twice,
                 late and roomy: «זה נשמע רחוק / פחות טוב»). `bleed` prints the matrix that shows which mic needs it.
                 With --words (27.10.2026, אורח C, Alon: «הגרסה הזאת ממש טובה»): measured on the SAME voices through
                 both mics (match_fir_same_voice) — R should be the XLR mic of a speaker sitting next to K's. The tone

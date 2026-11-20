@@ -15,7 +15,7 @@ and the camera files drift ±1 frame against «מקור» (a one-frame sliver / 
    camera file in step with «מקור»: [cam, from, to, src_offset_s] (episode_repatch.py reads the 4th field).
 
 Without --words a split screen in «מקור» (label 0) inherits the camera before it and gets patched away — every split of the episode goes,
-and the wrong person is on screen whenever the speaker changed during one (ניב בלי, 1.11.2026: 38 % of the episode was split, 11.4 % wrong).
+and the wrong person is on screen whenever the speaker changed during one (אורח V, 1.11.2026: 38 % of the episode was split, 11.4 % wrong).
 With --words <transcript.json> (word list on the «מקור» clock, each with its mic) a split stays only where it is an exchange — both speakers
 talk inside ±--exch s, the quieter one at least --exch-min s — and in a monologue it becomes the speaker's camera (house rule: a split on
 exchanges, never in a monologue). --mic-cam 1=1,2=2 maps mics to cameras.

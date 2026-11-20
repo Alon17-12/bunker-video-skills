@@ -12,6 +12,25 @@ sys.path.insert(0, str(Path.home() / "bunker-video-engine/app"))
 import capcut  # noqa: E402
 
 FF = str(Path.home() / "ffmpeg-bin/ffmpeg"); US = 1_000_000
+
+# a minimal bidi for the check image (PIL has no raqm here): in a Hebrew line the runs are laid out right to left, Hebrew runs
+# are reversed, numbers / Latin words («12», «45,000», «client-e.example») keep their own order. Reversing the whole string
+# showed «כ-12» as «21» (client E QA, 19.11.2026) — the check image lied, the caption was right.
+_LTR = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9.,:%+/@_\-]*[A-Za-z0-9%+])?")
+_MIRROR = str.maketrans("()[]{}<>«»", ")(][}{><»«")
+
+
+def visual(line):
+    if not re.search("[א-ת]", line):
+        return line
+    runs, pos = [], 0
+    for m in _LTR.finditer(line):
+        if m.start() > pos:
+            runs.append(line[pos:m.start()][::-1].translate(_MIRROR))
+        runs.append(m.group(0)); pos = m.end()
+    if pos < len(line):
+        runs.append(line[pos:][::-1].translate(_MIRROR))
+    return "".join(reversed(runs))
 FONT = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
 
 
@@ -64,7 +83,10 @@ def main():
                     txt = json.loads(mats[s["material_id"]]["content"])["text"]
                     y = H / 2 - s["clip"]["transform"]["y"] * H / 2
                     f = ImageFont.truetype(FONT, int(H * (0.035 if W > H else 0.03)))
-                    dr.text((W / 2, y), txt[::-1] if re.search("[א-ת]", txt) else txt, font=f, anchor="mm", fill="white", stroke_width=4, stroke_fill="black")
+                    lines = txt.split("\n"); lh = f.size * 1.25
+                    for i, ln in enumerate(lines):           # one line at a time, top to bottom, in visual (bidi) order
+                        yy = y + (i - (len(lines) - 1) / 2) * lh
+                        dr.text((W / 2, yy), visual(ln), font=f, anchor="mm", fill="white", stroke_width=4, stroke_fill="black")
         if "--no-text" not in sys.argv:
             dr.text((20, 20), f"{t:.2f}", font=ImageFont.truetype(FONT, 50), fill="yellow")
         tiles.append(can.convert("RGB").resize((int(W * sc), int(H * sc))))

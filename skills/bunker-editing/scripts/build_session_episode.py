@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The full episode of a סשן בונקר as a CapCut project, cloned from an approved episode project.
 
-The template («אורח U אורח J צומת 20 פרק») already carries the house episode structure. Here it is reduced to
+The template («יונתן אורח W צומת 20 פרק») already carries the house episode structure. Here it is reduced to
 what the session spec asks for:
   · spine      — «מקור» trimmed to [trim_in, trim_out], muted (its sound is the Live-Mix, never used)
   · dialogue   — <session>/פרק/דיאלוג.wav (mic_dialogue.py master, on the «מקור» clock), same trim, volume 1.0
@@ -11,7 +11,7 @@ what the session spec asks for:
   · fades      — 0.5 s video (alpha keyframes) and audio fade in/out
 Removed: teaser, closing card, subscribe banners, the צומת 20 logo (none of them is in the spec).
 
-    $PY build_session_episode.py <session> --trim-in 3.2 --trim-out 850.1 --first "אלון=12.4" --first "אורח R=31.0" [--dry-run]
+    $PY build_session_episode.py <session> --trim-in 3.2 --trim-out 850.1 --first "אלון=12.4" --first "מיכאל=31.0" [--dry-run]
 
 CapCut must be fully closed (registering a project writes root_meta_info.json). The template is read only.
 """
@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.expanduser('~/bunker-video-engine/app'))
 import capcut, reels
 
 US = 1_000_000
-TEMPLATE = 'אורח U אורח J צומת 20 פרק'
-COLOR_FROM = '14.08.26 - אורח R ואורח T 1 - רז'
+TEMPLATE = 'יונתן אורח W צומת 20 פרק'
+COLOR_FROM = '14.08.26 - מיכאל וירין 1 - רז'
 FADE_US = 500_000
 LT_SECONDS = 5.0
 LT_SCALE, LT_X, LT_Y = 0.40, 0.504, -0.583      # 760×190 PNG, bottom-right, clear of the faces
@@ -67,7 +67,7 @@ def build(d, source, src_dur_us, trim_in_us, trim_out_us, show_logo):
             s = t['segments'][0]; t['segments'] = [s]
             s['target_timerange'] = {'start': 0, 'duration': e_us}
             s['source_timerange'] = {'start': 0, 'duration': e_us}
-            # Alon 17.10.2026: the logo sits in the top-right corner, high (Guest J had it under the צומת 20 logo, y 0.46)
+            # Alon 17.10.2026: the logo sits in the top-right corner, high (Wolfgor had it under the צומת 20 logo, y 0.46)
             s['clip'] = dict(s.get('clip') or {}, transform={'x': LOGO_X, 'y': LOGO_Y})
             kept.append(t); logos += 1
     d['tracks'] = kept
@@ -137,6 +137,104 @@ def add_routing_patches(draft_name, patches, trim_in_us, cams):
     d['tracks'].insert(1, {'id': capcut._new_id(), 'type': 'video', 'attribute': 0, 'flag': 0, 'name': 'ניתוב', 'segments': segs})
     capcut._atomic_write(draft_dir, d)
     return len(segs)
+
+
+EDGE_US = 2_000_000
+
+
+def single_layer_fades(draft_name, edge_us=EDGE_US):
+    """The fade in/out must happen on ONE layer. With a routing patch over the spine at the first/last seconds, both layers
+    faded and the camera underneath showed through: the fade-in revealed the other speaker instead of rising from black
+    (Alon, client E 19.11.2026 — he fixed the junior start by hand: both layers → compound clip → «Fade In»).
+    Here, without compounds: for the first and last edge_us the spine itself shows the routed camera(s), the routing track is
+    empty there, and only those spine pieces carry the alpha fade. A routing cut that would leave < 0.6 s inside the window
+    becomes the window edge (no one-shot sliver at the fade)."""
+    draft_dir = capcut.DRAFTS_DIR / draft_name
+    d = capcut.load_draft(draft_name)
+    spine_t = d['tracks'][0]
+    rt = next((t for t in d['tracks'] if t.get('name') == 'ניתוב'), None)
+    if not rt or not rt['segments']:
+        return 0
+    mats = d['materials']
+    idx = mat_index(d)
+    ts = lambda s: s['target_timerange']['start']
+    te = lambda s: ts(s) + s['target_timerange']['duration']
+    sp = spine_t['segments'][0]
+    a, b = ts(sp), te(sp)
+    off = sp['source_timerange']['start'] - a                        # cameras and «מקור» share the RØDECaster clock
+
+    def clone(seg):
+        s = copy.deepcopy(seg); s['id'] = capcut._new_id(); refs = []
+        for r in seg.get('extra_material_refs', []):
+            lst = next((k for k, v in mats.items() if isinstance(v, list) and any(isinstance(x, dict) and x.get('id') == r for x in v)), None)
+            if not lst or lst in ('audio_fades', 'transitions'):
+                continue
+            e = copy.deepcopy(next(x for x in mats[lst] if x.get('id') == r)); e['id'] = capcut._new_id()
+            mats[lst].append(e); refs.append(e['id'])
+        s['extra_material_refs'] = refs; s['common_keyframes'] = []; s['volume'] = 0.0
+        return s
+
+    def window(at_start):
+        w0, w1 = (a, a + edge_us) if at_start else (b - edge_us, b)
+        for s in rt['segments']:
+            if at_start and w0 < te(s) < w1 and w1 - te(s) < 600_000:
+                w1 = te(s)
+            if not at_start and w0 < ts(s) < w1 and ts(s) - w0 < 600_000:
+                w0 = ts(s)
+        return w0, w1
+
+    done, pieces_all = 0, []
+    for at_start in (True, False):
+        w0, w1 = window(at_start)
+        under = sorted([s for s in rt['segments'] if ts(s) < w1 and te(s) > w0], key=ts)
+        if not under:
+            continue                                                  # «מקור» alone on screen: its own fade is single-layer
+        pieces, t = [], w0
+        for s in under:
+            x, y = max(ts(s), w0), min(te(s), w1)
+            if x > t:                                                  # a hole in the routing: «מקור» fills it, as before
+                f = clone(sp); f['source_timerange'] = {'start': t + off, 'duration': x - t}
+                f['target_timerange'] = {'start': t, 'duration': x - t}; pieces.append(f)
+            p = clone(s); p['source_timerange'] = {'start': s['source_timerange']['start'] + (x - ts(s)), 'duration': y - x}
+            p['target_timerange'] = {'start': x, 'duration': y - x}; pieces.append(p); t = y
+        if t < w1:
+            f = clone(sp); f['source_timerange'] = {'start': t + off, 'duration': w1 - t}
+            f['target_timerange'] = {'start': t, 'duration': w1 - t}; pieces.append(f)
+        edge = pieces[0] if at_start else pieces[-1]
+        edge['common_keyframes'] = [alpha_kf_one(edge['source_timerange']['duration'], edge['source_timerange']['start'], at_start)]
+        for s in under:                                                # routing: nothing over the window
+            s['common_keyframes'] = [k for k in s.get('common_keyframes', []) if k.get('property_type') != 'KFTypeAlpha']
+            if ts(s) >= w0 and te(s) <= w1:
+                rt['segments'].remove(s)
+            elif at_start:
+                cut = w1 - ts(s); s['source_timerange']['start'] += cut; s['source_timerange']['duration'] -= cut
+                s['target_timerange'] = {'start': w1, 'duration': s['source_timerange']['duration']}
+            else:
+                s['target_timerange']['duration'] = w0 - ts(s); s['source_timerange']['duration'] = w0 - ts(s)
+        if at_start:
+            cut = w1 - ts(sp); sp['source_timerange']['start'] += cut; sp['source_timerange']['duration'] -= cut
+            sp['target_timerange'] = {'start': w1, 'duration': sp['source_timerange']['duration']}
+        else:
+            sp['target_timerange']['duration'] = w0 - ts(sp); sp['source_timerange']['duration'] = w0 - ts(sp)
+        pieces_all += pieces; done += 1
+    # the spine keeps an alpha fade only on an edge no routing patch covered
+    ends = (sp['source_timerange']['start'], sp['source_timerange']['start'] + sp['source_timerange']['duration'])
+    sp['common_keyframes'] = [k for k in sp.get('common_keyframes', []) if k.get('property_type') != 'KFTypeAlpha']
+    kept = [k for k in alpha_kf(b - a, a + off)['keyframe_list'] if ends[0] <= k['time_offset'] <= ends[1]]
+    if len(kept) >= 2:
+        sp['common_keyframes'].append({'id': capcut._new_id(), 'material_id': '', 'property_type': 'KFTypeAlpha', 'keyframe_list': kept})
+    spine_t['segments'] = sorted(spine_t['segments'] + pieces_all, key=ts)
+    capcut._atomic_write(draft_dir, d)
+    return done
+
+
+def alpha_kf_one(dur_us, src_start_us, fade_in):
+    """alpha keyframes for a fade in (start) or out (end) on one segment, source clock like alpha_kf"""
+    kf = lambda t, v, curve='Line': {'id': capcut._new_id(), 'curveType': curve, 'time_offset': src_start_us + t,
+                                     'left_control': {'x': 0.0, 'y': 0.0}, 'right_control': {'x': 0.0, 'y': 0.0},
+                                     'values': [v], 'string_value': '', 'graphID': ''}
+    pts = [kf(0, 0.0), kf(FADE_US, 1.0, 'CurveInOut')] if fade_in else [kf(dur_us - FADE_US, 1.0), kf(dur_us, 0.0, 'CurveInOut')]
+    return {'id': capcut._new_id(), 'material_id': '', 'property_type': 'KFTypeAlpha', 'keyframe_list': pts}
 
 
 def grade_footage_only(draft_name):
@@ -214,6 +312,7 @@ def main():
                         '-t', f'{(tout - tin) / US:.6f}', '-i', str(dialogue), '-c:a', 'pcm_s24le', str(local_dialogue)], check=True)
         capcut.add_audio(new_name, str(local_dialogue), 'דיאלוג', at_us=0, duration_us=e_us, volume=1.0, kind='sfx')
         n_patch = add_routing_patches(new_name, json.loads(Path(a.patches).read_text()), tin, {1: ing['cam1'], 2: ing['cam2']}) if a.patches else 0
+        n_edges = single_layer_fades(new_name) if n_patch else 0
         capcut.apply_color(new_name, color)
         n_lt = add_lower_thirds(new_name, firsts) if firsts else 0
         capcut.apply_fades(new_name, FADE_US // 1000)
@@ -222,7 +321,7 @@ def main():
         shutil.rmtree(dst, ignore_errors=True)
         raise
     out = {'draft': new_name, 'duration_s': round(e_us / US, 2), 'trim_in': a.trim_in, 'trim_out': a.trim_out,
-           'logo_tracks': logos, 'lower_thirds': n_lt, 'routing_patches': n_patch, 'color_from': a.color_from}
+           'logo_tracks': logos, 'lower_thirds': n_lt, 'routing_patches': n_patch, 'single_layer_fade_edges': n_edges, 'color_from': a.color_from}
     (S / 'פרק' / 'פרויקט.json').write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print('✅', json.dumps(out, ensure_ascii=False))
 

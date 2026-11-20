@@ -1,7 +1,7 @@
 """0910 round 4 — (1) Latin brand-name size 18→16; (2) a music bed per section (the 8 runs of
 footage between the white cards), picked by mood/tempo, gain set from measured loudness so
 every bed sits ~16 dB under the speech, 0.8s in / 1.2s out fades; (3) a white down-arrow that
-pops in (scale overshoot, CurveInOut) with a bob, plus a Pop SFX, every time Eyal says
+pops in (scale overshoot, CurveInOut) with a bob, plus a Pop SFX, every time client E says
 "…כאן למטה"."""
 import os
 import sys, json, copy, shutil, subprocess
