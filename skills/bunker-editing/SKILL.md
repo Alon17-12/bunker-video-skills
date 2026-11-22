@@ -16,6 +16,9 @@ description: >-
   לפי הזמנים האלה», «הוק … התחלה … סיום», «לא בטוח אם הוא סימן לפי המקור או לפי הרז», «תערוך ב-remotion לפי הסקיל»,
   «תעלה לו למערכת שיוכל לסמן תיקונים» — references/podcast-reels-remotion.md (clocks, finding a quote in another
   session, cut/route/split, follow camera, LUT sheet, graphics, 4K checked against the 720, delivery through the admin).
+  And for a «רז» — the routed full episode of a recording as an editable CapCut project: «תכין קובץ רז», «רז לסשן של X»,
+  «מצלמות 1+2, ניקוי פתיחה וסיום, LUT, פייד, ניתוב לפי גלי הקול», «לא יותר מדקה בלי לראות את הדובר השני» —
+  references/raz.md (mic routing, media inside the draft, listener cutaways on Alon's current timeline).
   Not for a צומת 20 episode (tsomet-20-episode) or a single stand-alone reel. Long-form outside Express — a digital
   course, a multi-episode interview project, a VSL — is long-form-editing.
 ---
@@ -117,6 +120,17 @@ $PY -m bsession ingest "<ssd folder>" "<session>" --in-place      # בלי הע�
 הפרומפט מ«העתק פרומפט» בבונקר נשמר ב-`תיקונים/<סבב>.md` →
 `$PY -m bsession corrections "<session>" "תיקונים/<סבב>.md"` (פורמט: `references/corrections-format.md`) → רשימת עבודה עם זמנים
 והמילים שנאמרו → ביצוע לפי `references/corrections.md` → פרויקט קאפקאט בשם גרסה חדש (לעולם לא מעל פרויקט שאלון ערך ידנית).
+
+## «רז» — הפרק המנותב כפרויקט קאפקאט («תכין רז», «קובץ רז לסשן של X»)
+**`references/raz.md`** — לקרוא קודם. נבנה 22.11.2026 על מנחה M3 + מנחה R2, «מעולה». הכלים ב-`scripts/raz/`.
+1. **התוצר = פרויקט קאפקאט** שאלון מתקן בעצמו, לא mp4 (`render.py` רק כשמבקשים קובץ).
+2. **ניתוב:** משתי המצלמות לפי המיקרופונים (`route.py`, ‏6 dB, תגובה < 1 שנ' לא תופסת מסך, שוט ≥ 2 שנ'). «מקור» לא משמש.
+3. **התחלה וסוף:** מהמילים (`edges.py`) ומהשקט במעטפות. בלי צוות יוצא ובלי פתיחה שנכשלה. טייק חוזר באמצע מציינים, לא חותכים.
+4. **בנייה** (`build_raz_project.py`): מצלמה 1 = שדרה, מצלמה 2 = מסלול «ניתוב», LUT הבונקר ב-1.0, פייד 0.5, דיאלוג מהמיקים.
+5. **המדיה לתוך הטיוטה** (`localize_media.py`) לפני שאלון פותח. אחרת «File not accessible», והוא לא עושה Relink. בודקים מקום בדיסק.
+6. **הקשבה** (`listener_plan` → `edge_check` → `listener_apply`): אף מצלמה לא מעל 60 שנ' ברצף.
+   - קאטים בהפסקות של הדובר, המאזין שותק ורגוע, בלי יד בפריים מהקצה.
+   - תמיד על הטיוטה החיה, אחרי החיתוכים של אלון.
 
 ## רילס תוכן כשאלון כבר חתך בקאפקאט («רילס לעריכה <תאריך>», «תערוך לפי הסגנון העדכני»)
 **`references/content-reels-dress.md`** — לקרוא קודם. הלבשה של החיתוך שלו ב-Remotion (מנוע C1911, אושר 19.11.2026):

@@ -23,7 +23,7 @@ import capcut, reels
 
 US = 1_000_000
 TEMPLATE = 'יונתן אורח W צומת 20 פרק'
-COLOR_FROM = '14.08.26 - מיכאל וירין 1 - רז'
+COLOR_FROM = '14.08.26 - לקוח V 1 - רז'
 FADE_US = 500_000
 LT_SECONDS = 5.0
 LT_SCALE, LT_X, LT_Y = 0.40, 0.504, -0.583      # 760×190 PNG, bottom-right, clear of the faces
