@@ -9,3 +9,5 @@ node_modules/
 !skills/podcast-reels-9x16/references/click.wav
 !engine/bunker-session/assets/**
 !engine/bunker-session/reels/assets/**
+.env.local
+.env
